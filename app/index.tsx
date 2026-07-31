@@ -9,56 +9,39 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const verifyEndpoints = async (retries = 3, delay = 1000) => {
+  const checkAndNavigate = async () => {
     setError(null);
     setLoading(true);
 
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        console.log(`Testing Health Endpoint (Attempt ${attempt})...`);
-        const healthRes = await fetch(`${API_BASE_URL}/health`);
+    try {
+      console.log('Verifying API connection...');
+      const healthRes = await fetch(`${API_BASE_URL}/health`);
 
-        if (!healthRes.ok) {
-          throw new Error(`Health status returned ${healthRes.status}`);
-        }
-
-        const healthData = await healthRes.json();
-        console.log('Health Output:', JSON.stringify(healthData));
-
-        console.log('Testing Services Endpoint...');
-        const servicesRes = await fetch(`${API_BASE_URL}/services`);
-
-        if (!servicesRes.ok) {
-          throw new Error(`Services status returned ${servicesRes.status}`);
-        }
-
-        const servicesData = await servicesRes.json();
-        console.log('Services Sample Count:', servicesData.count || servicesData.services?.length);
-
-        setLoading(false);
-        return;
-      } catch (err: any) {
-        console.log(`Fetch attempt ${attempt} failed:`, err.message);
-
-        if (attempt === retries) {
-          setError(err.message || 'Network request failed. Please check backend connection.');
-          setLoading(false);
-        } else {
-          await new Promise((res) => setTimeout(res, delay));
-        }
+      if (!healthRes.ok) {
+        throw new Error(`Server returned status ${healthRes.status}`);
       }
+
+      console.log('API reachable. Redirecting to home...');
+      setLoading(false);
+      
+      router.replace('/(tabs)/home' as any);
+    } catch (err: any) {
+      console.log('Diagnostic check skipped or failed:', err.message);
+      
+      setError('Could not reach backend API. You can still proceed or retry.');
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    verifyEndpoints();
+    checkAndNavigate();
   }, []);
 
   if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#0066CC" />
-        <Text style={styles.loadingText}>Connecting to BizBridge Services...</Text>
+        <Text style={styles.loadingText}>Loading BizBridge...</Text>
       </View>
     );
   }
@@ -66,28 +49,21 @@ export default function Index() {
   if (error) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorTitle}>Connection Error</Text>
+        <Text style={styles.errorTitle}>Connection Issue</Text>
         <Text style={styles.errorSub}>{error}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={() => verifyEndpoints()}>
-          <Text style={styles.retryText}>Retry Connection</Text>
+
+        <TouchableOpacity style={styles.primaryButton} onPress={() => router.replace('/(tabs)/home' as any)}>
+          <Text style={styles.buttonText}>Proceed Anyway</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.secondaryButton} onPress={checkAndNavigate}>
+          <Text style={styles.secondaryText}>Retry Diagnostics</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>BizBridge Marketplace</Text>
-      <Text style={styles.subtitle}>API connection verified successfully.</Text>
-      
-      <TouchableOpacity 
-        style={styles.primaryButton} 
-        onPress={() => router.replace('/(tabs)/home' as any)}
-      >
-        <Text style={styles.buttonText}>Continue to Home</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  return null;
 }
 
 const styles = StyleSheet.create({
@@ -103,17 +79,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666666',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1A1A1A',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#2E7D32',
-    marginBottom: 24,
-  },
   errorTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -126,26 +91,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 24,
   },
-  retryButton: {
-    backgroundColor: '#0066CC',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  retryText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 16,
-  },
   primaryButton: {
     backgroundColor: '#0066CC',
     paddingVertical: 14,
     paddingHorizontal: 32,
     borderRadius: 8,
+    marginBottom: 12,
+    width: '100%',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  secondaryButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  secondaryText: {
+    color: '#0066CC',
+    fontWeight: '600',
+    fontSize: 15,
   },
 });
