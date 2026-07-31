@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../../../src/theme/ThemeContext';
 import { LoadingSpinner } from '../../../src/components/common/LoadingSpinner';
 import { ErrorMessage } from '../../../src/components/common/ErrorMessage';
-import { getServiceById, updateService } from '../../../src/services/service.service';
+import { getServiceById, updateService } from '../../../src/services/service';
 import { uploadImage } from '../../../src/services/user.service';
 import { JOB_CATEGORIES } from '../../../src/constants/categories';
 import { LAGOS_LGAS } from '../../../src/constants/locations';

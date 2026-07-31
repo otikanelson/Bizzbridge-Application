@@ -1,8 +1,6 @@
-/**
- * Customer Bookings Screen - Requirements: 9.1-9.9
- */
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Platform, StatusBar } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { BookingCard } from '../../src/components/booking/BookingCard';
@@ -11,7 +9,6 @@ import { EmptyState } from '../../src/components/common/EmptyState';
 import { ErrorMessage } from '../../src/components/common/ErrorMessage';
 import { getMyBookings } from '../../src/services/booking.service';
 import { Booking } from '../../src/types/models';
-import { BOOKING_STATUSES } from '../../src/constants/statuses';
 
 const STATUS_FILTERS = [
   { label: 'All', value: '' },
@@ -24,6 +21,7 @@ const STATUS_FILTERS = [
 export default function Bookings() {
   const router = useRouter();
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -46,16 +44,16 @@ export default function Bookings() {
   useEffect(() => { load(); }, []);
 
   const filtered = filter ? bookings.filter(b => b.status === filter) : bookings;
+  const statusBarPadding = Platform.OS === 'android' ? (StatusBar.currentHeight || insets.top) : 0;
 
   if (loading) return <LoadingSpinner fullScreen message="Loading bookings..." />;
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]} edges={['top']}>
+      <View style={[styles.header, { borderBottomColor: theme.colors.border, paddingTop: statusBarPadding + 16 }]}>
         <Text style={[styles.title, { color: theme.colors.text }]}>My Bookings</Text>
       </View>
 
-      {/* Filter tabs */}
       <View style={[styles.filterRow, { borderBottomColor: theme.colors.border }]}>
         {STATUS_FILTERS.map(f => (
           <TouchableOpacity
@@ -94,7 +92,7 @@ export default function Bookings() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  header: { padding: 16, paddingTop: 20, borderBottomWidth: 1 },
+  header: { paddingHorizontal: 16, paddingBottom: 16, borderBottomWidth: 1 },
   title: { fontSize: 22, fontWeight: '700' },
   filterRow: { flexDirection: 'row', borderBottomWidth: 1 },
   filterTab: { flex: 1, paddingVertical: 12, alignItems: 'center' },

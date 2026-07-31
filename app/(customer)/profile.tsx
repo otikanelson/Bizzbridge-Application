@@ -1,7 +1,5 @@
-/**
- * Customer Profile Screen - Requirements: 22.1-22.11, 69.1, 69.2
- */
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Platform, StatusBar } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/theme/ThemeContext';
@@ -12,6 +10,7 @@ export default function CustomerProfile() {
   const router = useRouter();
   const { theme, toggleTheme, themeMode } = useTheme();
   const { user, logout } = useAuthContext();
+  const insets = useSafeAreaInsets();
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
@@ -32,11 +31,12 @@ export default function CustomerProfile() {
     </TouchableOpacity>
   );
 
+  const statusBarPadding = Platform.OS === 'android' ? (StatusBar.currentHeight || insets.top) : 0;
+
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
-      <ScrollView>
-        {/* Header */}
-        <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.primary }]} edges={['top']}>
+      <ScrollView style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.header, { backgroundColor: theme.colors.primary, paddingTop: statusBarPadding + 16 }]}>
           <View style={styles.avatarWrap}>
             {user?.profileImage ? (
               <Image source={{ uri: user.profileImage }} style={styles.avatar} />
@@ -56,7 +56,6 @@ export default function CustomerProfile() {
           )}
         </View>
 
-        {/* Menu */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
           <MenuItem icon="person-outline" label="Edit Profile" onPress={() => router.push('/profile/edit')} />
           <MenuItem icon="lock-closed-outline" label="Change Password" onPress={() => router.push('/profile/change-password')} />
@@ -87,7 +86,7 @@ export default function CustomerProfile() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  header: { alignItems: 'center', padding: 24, paddingTop: 32, paddingBottom: 32 },
+  header: { alignItems: 'center', paddingHorizontal: 24, paddingBottom: 32 },
   avatarWrap: { marginBottom: 12 },
   avatar: { width: 80, height: 80, borderRadius: 40, borderWidth: 3, borderColor: 'rgba(255,255,255,0.5)' },
   avatarPlaceholder: { width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center' },

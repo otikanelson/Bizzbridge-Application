@@ -1,8 +1,6 @@
-/**
- * Customer Requests Screen - Requirements: 10.1-10.9
- */
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Platform, StatusBar } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { RequestCard } from '../../src/components/request/RequestCard';
@@ -23,6 +21,7 @@ const STATUS_FILTERS = [
 export default function Requests() {
   const router = useRouter();
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -45,12 +44,13 @@ export default function Requests() {
   useEffect(() => { load(); }, []);
 
   const filtered = filter ? requests.filter(r => r.status === filter) : requests;
+  const statusBarPadding = Platform.OS === 'android' ? (StatusBar.currentHeight || insets.top) : 0;
 
   if (loading) return <LoadingSpinner fullScreen message="Loading requests..." />;
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]} edges={['top']}>
+      <View style={[styles.header, { borderBottomColor: theme.colors.border, paddingTop: statusBarPadding + 16 }]}>
         <Text style={[styles.title, { color: theme.colors.text }]}>My Requests</Text>
       </View>
 
@@ -92,7 +92,7 @@ export default function Requests() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  header: { padding: 16, paddingTop: 20, borderBottomWidth: 1 },
+  header: { paddingHorizontal: 16, paddingBottom: 16, borderBottomWidth: 1 },
   title: { fontSize: 22, fontWeight: '700' },
   filterRow: { flexDirection: 'row', borderBottomWidth: 1 },
   filterTab: { flex: 1, paddingVertical: 12, alignItems: 'center' },

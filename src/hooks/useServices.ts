@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import * as serviceService from '../services/service.service';
+import * as serviceService from '../services/service';
 import { Service } from '../types/models';
 import { CreateServiceRequest, SearchServicesParams } from '../types/api';
 

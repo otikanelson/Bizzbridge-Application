@@ -13,7 +13,7 @@ import { useAuthContext } from '../../src/context/AuthContext';
 import { ServiceGallery } from '../../src/components/service/ServiceGallery';
 import { LoadingSpinner } from '../../src/components/common/LoadingSpinner';
 import { ErrorMessage } from '../../src/components/common/ErrorMessage';
-import { getServiceById, deleteService, toggleServiceStatus } from '../../src/services/service.service';
+import { getServiceById, deleteService, toggleServiceStatus } from '../../src/services/service';
 import { getUserById } from '../../src/services/user.service';
 import { getCategoryById } from '../../src/constants/categories';
 import { formatPrice } from '../../src/utils/formatting';

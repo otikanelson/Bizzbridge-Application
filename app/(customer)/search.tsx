@@ -1,20 +1,17 @@
-/**
- * Search Screen - Requirements: 5.1-5.10, 38.1-38.10, 39.1-39.10, 65.1-65.9
- */
 import { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity,
-  Modal, ScrollView, SafeAreaView, RefreshControl,
+  Modal, ScrollView, RefreshControl, Platform, StatusBar,
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { useRouter } from 'expo-router';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { ServiceCard } from '../../src/components/service/ServiceCard';
 import { LoadingSpinner } from '../../src/components/common/LoadingSpinner';
 import { EmptyState } from '../../src/components/common/EmptyState';
 import { Picker } from '../../src/components/common/Picker';
-import { searchServices } from '../../src/services/service.service';
+import { searchServices } from '../../src/services/service';
 import { JOB_CATEGORIES } from '../../src/constants/categories';
 import { LAGOS_LGAS } from '../../src/constants/locations';
 import { Service } from '../../src/types/models';
@@ -31,6 +28,7 @@ const SORT_OPTIONS = [
 export default function Search() {
   const router = useRouter();
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ q?: string; category?: string }>();
 
   const [query, setQuery] = useState(params.q || '');
@@ -69,11 +67,11 @@ export default function Search() {
   useEffect(() => { debouncedSearch(query); }, [query]);
 
   const clearFilters = () => { setCategory(''); setLga(''); setPricingType(''); };
+  const statusBarPadding = Platform.OS === 'android' ? (StatusBar.currentHeight || insets.top) : 0;
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
-      {/* Search bar */}
-      <View style={[styles.searchRow, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.card }]} edges={['top']}>
+      <View style={[styles.searchRow, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border, paddingTop: statusBarPadding + 8 }]}>
         <View style={[styles.inputWrap, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
           <Ionicons name="search-outline" size={18} color={theme.colors.textSecondary} />
           <TextInput
@@ -100,8 +98,7 @@ export default function Search() {
         </TouchableOpacity>
       </View>
 
-      {/* Sort row */}
-      <View style={[styles.sortRow, { borderBottomColor: theme.colors.border }]}>
+      <View style={[styles.sortRow, { backgroundColor: theme.colors.background, borderBottomColor: theme.colors.border }]}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortList}>
           {SORT_OPTIONS.map(opt => (
             <TouchableOpacity
@@ -115,23 +112,23 @@ export default function Search() {
         </ScrollView>
       </View>
 
-      {/* Results */}
-      {loading && !refreshing ? (
-        <LoadingSpinner fullScreen message="Searching..." />
-      ) : (
-        <FlatList
-          data={results}
-          keyExtractor={item => item._id}
-          contentContainerStyle={styles.list}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); doSearch(query, category, lga, pricingType, sortBy); }} tintColor={theme.colors.primary} />}
-          ListEmptyComponent={<EmptyState icon="🔍" title="No services found" message="Try adjusting your search or filters" action={activeFilters > 0 ? { label: 'Clear Filters', onPress: clearFilters } : undefined} />}
-          renderItem={({ item }) => (
-            <ServiceCard service={item} onPress={s => router.push({ pathname: '/service/[id]', params: { id: s._id } })} />
-          )}
-        />
-      )}
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        {loading && !refreshing ? (
+          <LoadingSpinner fullScreen message="Searching..." />
+        ) : (
+          <FlatList
+            data={results}
+            keyExtractor={item => item._id}
+            contentContainerStyle={styles.list}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); doSearch(query, category, lga, pricingType, sortBy); }} tintColor={theme.colors.primary} />}
+            ListEmptyComponent={<EmptyState icon="🔍" title="No services found" message="Try adjusting your search or filters" action={activeFilters > 0 ? { label: 'Clear Filters', onPress: clearFilters } : undefined} />}
+            renderItem={({ item }) => (
+              <ServiceCard service={item} onPress={s => router.push({ pathname: '/service/[id]', params: { id: s._id } })} />
+            )}
+          />
+        )}
+      </View>
 
-      {/* Filter Modal */}
       <Modal visible={filterVisible} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={[styles.modalSafe, { backgroundColor: theme.colors.background }]}>
           <View style={[styles.modalHeader, { borderBottomColor: theme.colors.border }]}>

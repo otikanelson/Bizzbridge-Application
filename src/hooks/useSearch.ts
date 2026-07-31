@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import * as serviceService from '../services/service.service';
+import * as serviceService from '../services/service';
 import { Service } from '../types/models';
 import { SearchServicesParams } from '../types/api';
 import { debounce } from '../utils/helpers';

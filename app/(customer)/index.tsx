@@ -1,12 +1,9 @@
-/**
- * Customer Home Screen
- * Requirements: 4.1-4.10, 57.1-57.7
- */
 import { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  TextInput, FlatList, RefreshControl, SafeAreaView,
+  FlatList, RefreshControl, Platform, StatusBar,
 } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/theme/ThemeContext';
@@ -14,7 +11,7 @@ import { useAuthContext } from '../../src/context/AuthContext';
 import { ServiceCard } from '../../src/components/service/ServiceCard';
 import { LoadingSpinner } from '../../src/components/common/LoadingSpinner';
 import { ErrorMessage } from '../../src/components/common/ErrorMessage';
-import { getFeaturedServices } from '../../src/services/service.service';
+import { getFeaturedServices } from '../../src/services/service';
 import { getFeaturedArtisans } from '../../src/services/user.service';
 import { JOB_CATEGORIES } from '../../src/constants/categories';
 import { Service, User } from '../../src/types/models';
@@ -23,6 +20,7 @@ export default function CustomerHome() {
   const router = useRouter();
   const { theme } = useTheme();
   const { user } = useAuthContext();
+  const insets = useSafeAreaInsets();
 
   const [services, setServices] = useState<Service[]>([]);
   const [artisans, setArtisans] = useState<User[]>([]);
@@ -72,17 +70,18 @@ export default function CustomerHome() {
 
   if (loading) return <LoadingSpinner fullScreen message="Loading..." />;
 
+  const statusBarPadding = Platform.OS === 'android' ? (StatusBar.currentHeight || insets.top) : 0;
+
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.primary }]} edges={['top']}>
       <ScrollView
+        style={{ backgroundColor: theme.colors.background }}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.colors.primary} />}
       >
-        {/* Header */}
-        <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
+        <View style={[styles.header, { backgroundColor: theme.colors.primary, paddingTop: statusBarPadding + 16 }]}>
           <Text style={styles.greeting}>Hello, {firstName} 👋</Text>
           <Text style={styles.headerSub}>Find skilled artisans near you</Text>
-          {/* Search bar */}
           <TouchableOpacity
             style={[styles.searchBar, { backgroundColor: '#fff' }]}
             onPress={handleSearch}
@@ -93,7 +92,6 @@ export default function CustomerHome() {
           </TouchableOpacity>
         </View>
 
-        {/* Categories */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Browse Categories</Text>
           <FlatList
@@ -117,7 +115,6 @@ export default function CustomerHome() {
           />
         </View>
 
-        {/* Featured Services */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Featured Services</Text>
@@ -138,7 +135,6 @@ export default function CustomerHome() {
           )}
         </View>
 
-        {/* Featured Artisans */}
         {artisans.length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Top Artisans</Text>
@@ -183,7 +179,7 @@ export default function CustomerHome() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  header: { padding: 24, paddingTop: 48, paddingBottom: 32 },
+  header: { padding: 24, paddingBottom: 32 },
   greeting: { fontSize: 22, fontWeight: 'bold', color: '#fff', marginBottom: 4 },
   headerSub: { fontSize: 14, color: 'rgba(255,255,255,0.85)', marginBottom: 16 },
   searchBar: {

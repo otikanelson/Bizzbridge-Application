@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../../src/theme/ThemeContext';
 import { LoadingSpinner } from '../../src/components/common/LoadingSpinner';
-import { createService } from '../../src/services/service.service';
+import { createService } from '../../src/services/service';
 import { uploadImage } from '../../src/services/user.service';
 import { JOB_CATEGORIES } from '../../src/constants/categories';
 import { LAGOS_LGAS } from '../../src/constants/locations';

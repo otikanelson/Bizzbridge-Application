@@ -17,6 +17,51 @@ export default function Index() {
     });
   }, []);
 
+  const verifyEndpoints = async (retries = 3, delay = 1000) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        console.log('Testing Health Endpoint...');
+        const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/health`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Health Status:', response.status);
+          console.log('Health Output:', JSON.stringify(data));
+          return;
+        }
+      } catch (error) {
+        if (i === retries - 1) {
+          console.error('Diagnostic Fetch Failed:', error);
+        } else {
+          await new Promise((res) => setTimeout(res, delay));
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    const verifyEndpoints = async () => {
+      const baseUrl = 'https://biz-bridge-marketplacebackend.vercel.app/api';
+
+      try {
+        console.log('Testing Health Endpoint...');
+        const healthRes = await fetch(`${baseUrl}/health`);
+        console.log('Health Status:', healthRes.status);
+        const healthData = await healthRes.json();
+        console.log('Health Output:', healthData);
+
+        console.log('Testing Services Endpoint...');
+        const servicesRes = await fetch(`${baseUrl}/services`);
+        console.log('Services Status:', servicesRes.status);
+        const servicesData = await servicesRes.json();
+        console.log('Services Output Sample:', servicesData);
+      } catch (err: any) {
+        console.error('Diagnostic Fetch Failed:', err.message);
+      }
+    };
+
+    verifyEndpoints();
+  }, []);
+
   useEffect(() => {
     if (loading || !onboardingChecked) return;
 

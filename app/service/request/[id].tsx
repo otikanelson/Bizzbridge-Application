@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../src/theme/ThemeContext';
 import { LoadingSpinner } from '../../../src/components/common/LoadingSpinner';
 import { ErrorMessage } from '../../../src/components/common/ErrorMessage';
-import { getServiceById } from '../../../src/services/service.service';
+import { getServiceById } from '../../../src/services/service';
 import { createRequest } from '../../../src/services/serviceRequest.service';
 import { Service } from '../../../src/types/models';
 

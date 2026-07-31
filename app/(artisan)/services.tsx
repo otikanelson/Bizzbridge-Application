@@ -10,7 +10,7 @@ import { ServiceCard } from '../../src/components/service/ServiceCard';
 import { LoadingSpinner } from '../../src/components/common/LoadingSpinner';
 import { EmptyState } from '../../src/components/common/EmptyState';
 import { ErrorMessage } from '../../src/components/common/ErrorMessage';
-import { getMyServices } from '../../src/services/service.service';
+import { getMyServices } from '../../src/services/service';
 import { Service } from '../../src/types/models';
 
 export default function MyServices() {

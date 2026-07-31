@@ -11,7 +11,7 @@ import { LoadingSpinner } from '../../src/components/common/LoadingSpinner';
 import { ErrorMessage } from '../../src/components/common/ErrorMessage';
 import { ServiceCard } from '../../src/components/service/ServiceCard';
 import { getUserById } from '../../src/services/user.service';
-import { getMyServices } from '../../src/services/service.service';
+import { getMyServices } from '../../src/services/service';
 import { User, Service } from '../../src/types/models';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
@@ -34,7 +34,7 @@ export default function ArtisanProfile() {
       setArtisan(userData);
       // Fetch artisan's services via search
       try {
-        const { searchServices } = await import('../../src/services/service.service');
+        const { searchServices } = await import('../../src/services/service');
         const result = await searchServices({ query: '', limit: 20 });
         // Filter by artisan
         const artisanServices = result.data.filter(s =>
