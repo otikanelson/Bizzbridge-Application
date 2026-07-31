@@ -1,8 +1,3 @@
-/**
- * Onboarding Screen
- * Requirements: 71.1, 71.2, 71.3, 71.4, 71.5, 71.6, 71.7, 71.8
- */
-
 import { useState, useRef } from 'react';
 import {
   View,
@@ -84,7 +79,7 @@ export default function Onboarding() {
 
   const completeOnboarding = async () => {
     await storeOnboardingCompleted(true);
-    router.replace('/(auth)/login');
+    router.replace('/(customer)/');
   };
 
   const handleNext = () => {
@@ -111,7 +106,6 @@ export default function Onboarding() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Skip button */}
       {!isLastSlide && (
         <TouchableOpacity
           style={styles.skipButton}
@@ -123,7 +117,6 @@ export default function Onboarding() {
         </TouchableOpacity>
       )}
 
-      {/* Slides */}
       <FlatList
         ref={flatListRef}
         data={SLIDES}
@@ -138,7 +131,6 @@ export default function Onboarding() {
         style={styles.flatList}
       />
 
-      {/* Dot indicators */}
       <View style={styles.dotsContainer}>
         {SLIDES.map((_, index) => (
           <View
@@ -155,7 +147,6 @@ export default function Onboarding() {
         ))}
       </View>
 
-      {/* Action buttons */}
       <View style={styles.buttonsContainer}>
         {isLastSlide ? (
           <TouchableOpacity

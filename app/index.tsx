@@ -32,7 +32,8 @@ export default function Index() {
         router.replace('/(customer)/');
       }
     } else {
-      router.replace('/(auth)/login');
+      // Allow guests to view customer screens without logging in
+      router.replace('/(customer)/');
     }
   }, [loading, isAuthenticated, user, onboardingChecked, onboardingDone]);
 

@@ -14,7 +14,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/utils/authGuard.ts"  ],
   "exclude": [
     "node_modules"
   ]
