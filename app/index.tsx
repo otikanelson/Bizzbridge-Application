@@ -23,11 +23,11 @@ export default function Index() {
 
       console.log('API reachable. Redirecting to home...');
       setLoading(false);
-      
+
       router.replace('/(tabs)/home' as any);
     } catch (err: any) {
       console.log('Diagnostic check skipped or failed:', err.message);
-      
+
       setError('Could not reach backend API. You can still proceed or retry.');
       setLoading(false);
     }
